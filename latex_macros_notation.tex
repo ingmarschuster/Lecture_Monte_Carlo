@@ -1,0 +1,129 @@
+%%%%% Comments, Todos, etc %%%%%
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+\newcommand{\cmt}[1]{\textcolor{red}{#1}}
+\newcommand{\todo}[1]{\textcolor{cyan}{#1}}
+
+%%%% General, Operators %%%%
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\newcommand{\trans}{\top} %matrix transpose
+
+\newcommand{\code}[1]{\texttt{#1}}
+
+%%%% Set Theory %%%%%%%
+\newcommand{\card}[1]{\vert #1 \vert} %cardinality
+\newcommand{\Reals}{\mathbb{R}}
+\newcommand{\Nats}{\mathbb{N}}
+
+%%%% Complexity %%%%%%%
+\newcommand{\BigO}{\mathcal{O}} %Big-O-notation
+
+
+%%% Probability theory %%%%%
+\newcommand{\Prob}{\mathbb{P}}
+
+\newcommand{\Expect}{\mathbb{E}}
+\newcommand{\Var}{\mathbb{V}}
+\newcommand{\Cov}{\textrm{Cov}}
+\newcommand{\Corr}{\textrm{Corr}}
+
+\newcommand{\indep}{\protect\mathpalette{\protect\independenT}{\perp}}\def\independenT#1#2{\mathrel{\rlap{$#1#2$}\mkern2mu{#1#2}}} %alternative: \!\perp\!\!\!\perp
+\newcommand{\dep}{\not\indep}
+
+\newcommand{\DistrDist}[2]{\mathcal{D}(#1,#2)} %General distance between distributions
+\newcommand{\distTV}[2]{|#1,#2|_\textrm{TV}} %Total Variation distance
+
+\newcommand{\Rv}{x} % random variable
+
+
+
+
+
+%%%% Distributions and their parameters %%%%%%
+\newcommand{\DNorm}{\mathcal{N}}
+\newcommand{\DNormCDF}{\Phi}
+
+\newcommand{\scale}{\sigma}
+
+\newcommand{\evid}{Z}
+
+
+
+
+
+%%%%% Monte Carlo %%%%%%%
+
+\newcommand{\iw}{W}  %importance weight
+\newcommand{\Riw}{\widetilde{\iw}}  %importance weight before resampling
+\newcommand{\niw}{\widehat{\iw}} %normalized importance weight
+\newcommand{\unwsum}[1]{\iw_{\Sigma}({#1})} %unormlized weight sum, where argument is sample set
+
+\newcommand{\psize}{N} %particle system size/population size
+\newcommand{\nsamp}{\psize} %number of samples
+
+\newcommand{\acor}{\rho} % auto correlation
+
+\newcommand{\targfunc}{h} %target of integration
+\newcommand{\targInt}{H} %target function integral
+
+\newcommand{\MK}{{\kappa}} % Markov Kernel
+
+
+\newcommand{\targd}{\mathbf{\pi}} %target density
+\newcommand{\targdim}{D} %target dimensionality
+\newcommand{\propd}{q} %proposal density
+
+\newcommand{\acc}{\alpha} %MH accentance probability
+
+\newcommand{\StateSp}{\mathcal{X}} %state space of a Markov Kernel or Markov Chain
+\newcommand{\SaS}{\mathbf{X}} %sample set
+\newcommand{\Wset}{\mathbf{W}} %sample set
+\newcommand{\RWset}{\widetilde{\Wset}} %weights set before resample
+\newcommand{\smp}{{X}} %sample
+\newcommand{\Rsmp}{\widetilde{\smp}} %sample before transition applied
+\newcommand{\RSaS}{\widetilde{\SaS}} %sample set before transition applied
+
+\newcommand{\dat}{\mathcal{D}} %data
+
+\newcommand{\mdl}{\mathcal{M}} %data
+
+%%%%% Bayesian statistics %%%%%%%
+\newcommand{\prid}{\pi} %prior density
+\newcommand{\lhood}{\ell} %prior density
+\newcommand{\postd}{\bar{\targd}} %posterior density
+
+
+
+\newcommand{\est}{\mathfrak{I}}
+\newcommand{\esth}{\widehat{\est}}
+\newcommand{\estn}[1]{\est_{\mathrm{{#1}}}}
+\newcommand{\estev}{\mathfrak{Z}}
+
+
+\newcommand{\param}{\theta}
+\newcommand{\parsmp}{\Theta}
+\newcommand{\pred}{x}
+\newcommand{\predsmp}{X}
+\newcommand{\outc}{y}
+\newcommand{\outcest}{\widehat{\outc}}
+\newcommand{\outcsmp}{Y}
+\newcommand{\ciRv}{\gamma}
+\newcommand{\conRv}{\phi}
+\newcommand{\CiRv}{\gamma}
+\newcommand{\ConRv}{\Phi}
+
+%%%%% Pd Kernels %%%%%%%%
+
+\newcommand{\PDK}{\mathbf{k}} % Positive definite Kernel
+\newcommand{\RKHS}{{\mathcal{H}_\PDK}}
+
+%%%%%%%%%% NLP %%%%%%%%
+\newcommand{\word}{\mathcal{w}}
+\newcommand{\numwords}{\mathcal{W}}
+\newcommand{\ctxt}{\mathcal{c}}
+
+\newcommand{\ctxtF}{v'}
+\newcommand{\wordF}{v}
+\newcommand{\score}{s}
