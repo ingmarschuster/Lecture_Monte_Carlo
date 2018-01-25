@@ -111,9 +111,9 @@
 	$$\outc_{opt} = \Expect_\targd [ \outc \, p(\outc|\pred,\Rv)] = \int \outc \, p(\outc|\pred,\Rv) \targd(\Rv) \mathrm{d} \Rv$$
 	\item assume we can directly sample from distribution given by density $\targd(\Rv) = p(\Rv|\dat)$
 	\item then  by the law of large numbers
-	$$\outc_{opt} \approx \frac{1}{\nsamp} \sum_{i=1}^{\nsamp}  \sum_{\outc} \outc \,  p(\outc|\pred,\parsmp_i)$$ for finitely many values of $y$ and $\parsmp_i \sim \targd$ and
+	$$\outc_{opt} \approx \frac{1}{\nsamp} \sum_{i=1}^{\nsamp}  \sum_{\outc} \outc \,  p(\outc|\pred,\smp_i)$$ for finitely many values of $y$ and $\smp_i \sim \targd$ and
 	 $$\outc_{opt} \approx \frac{1}{\nsamp} \sum_{i=1}^{\nsamp} \outcsmp_i$$
-	for  $\outcsmp_i \sim p(\outc|\pred,\parsmp_i)$
+	for  $\outcsmp_i \sim p(\outc|\pred,\smp_i)$
 \end{itemize}
 }
 
@@ -144,7 +144,7 @@
 \textbf{Disadvantages}
 \begin{itemize}
 	\item have to be able to sample from $\targd$
-	\item if $\Var[\targfunc(\parsmp_i)]$ large, so is the variance of our estimator
+	\item if $\Var[\targfunc(\smp_i)]$ large, so is the variance of our estimator
 \end{itemize}
 }
 
@@ -154,9 +154,9 @@
 	\item if we can't sample from $\targd$, we can still use MC
 	\begin{align*}
 		{\color{blue}\targInt := \Expect_\targd [\targfunc(\Rv)]} &= \int \targfunc(\Rv) \targd(\Rv) \mathrm d \Rv =  \int \targfunc(\Rv) \frac{\targd(\Rv)}{\propd(\Rv)} \propd(\Rv) \mathrm d \Rv \\
-		&\approx  {\color{blue} \frac{1}{\nsamp} \sum_{i=1}^{\nsamp}\targfunc(\parsmp_i)\iw_i =: \widehat{\targInt}_\propd}
+		&\approx  {\color{blue} \frac{1}{\nsamp} \sum_{i=1}^{\nsamp}\targfunc(\smp_i)\iw_i =: \widehat{\targInt}_\propd}
 	\end{align*}
-	for $\parsmp_i \sim \propd$ and $\iw_i = {\targd(\parsmp_i)}/{\propd(\parsmp_i)}$
+	for $\smp_i \sim \propd$ and $\iw_i = {\targd(\smp_i)}/{\propd(\smp_i)}$
 	\item called \emph{importance sampling} (IS)
 	\item assumes that $\targd(\Rv) \targfunc(\Rv) \neq 0 \Rightarrow \propd(\Rv) > 0$
 	\item assumes that $\targd$ can be evaluated in normalized form
@@ -169,9 +169,9 @@
 \begin{itemize}
 	\item we have $\Var[\widehat{\targInt}_\propd] = \sigma_\propd^2/\nsamp$ and can estimate
 	\begin{align*}
-		\sigma_\propd^2 & = \Expect[(\targfunc(\parsmp_i)\iw_i)^2] - \Expect[\targfunc(\parsmp_i)\iw_i]^2 \\
-		&= \Expect[(\targfunc(\parsmp_i)\iw_i - \Expect[\targfunc(\parsmp_i)\iw_i])^2] \\
-		 &\approx \sum_{i=1}^{\nsamp}[(\targfunc(\parsmp_i)\iw_i - \widehat{\targInt}_\propd)^2]
+		\sigma_\propd^2 & = \Expect[(\targfunc(\smp_i)\iw_i)^2] - \Expect[\targfunc(\smp_i)\iw_i]^2 \\
+		&= \Expect[(\targfunc(\smp_i)\iw_i - \Expect[\targfunc(\smp_i)\iw_i])^2] \\
+		 &\approx \sum_{i=1}^{\nsamp}[(\targfunc(\smp_i)\iw_i - \widehat{\targInt}_\propd)^2]
 	\end{align*} 
 	\item confidence interval for estimator $\widehat{\targInt}_\propd$ using gaussian cdf method
 \begin{center}
@@ -186,7 +186,7 @@
 	\begin{itemize}
 		\item how do we choose an optimal $\propd$?
 		\item estimator always unbiased, so variance only source of error
-		$$\sigma_\propd^2  = \Expect_\propd[(\targfunc(\parsmp_i)\iw_i)^2] - \Expect_\propd[\targfunc(\parsmp_i)\iw_i]^2 $$
+		$$\sigma_\propd^2  = \Expect_\propd[(\targfunc(\smp_i)\iw_i)^2] - \Expect_\propd[\targfunc(\smp_i)\iw_i]^2 $$
 		\item can be shown to be minimized at $$\propd(\Rv) = |\targfunc(\Rv)|\targd(\Rv)/\int|\targfunc(\Rv)|\targd(\Rv) \mathrm d \Rv$$
 		\item so to get the optimal $\propd$ we need to solve the original problem (integration wrt $\targd$)!
 		\item simple approach sample from Laplace approximation
@@ -224,9 +224,9 @@
 	\begin{itemize}
 		\item in case of unnormalized $\tilde \targd$ the \emph{self-normalized Importance Sampling} estimator can be used
 		\item idea is to simply estimate $\evid$ using standard IS
-		$$\int \tilde \targd(\Rv) \mathrm d \Rv = \int \evid \, \targd(\Rv) \mathrm d \Rv = \int \evid \frac{ \targd(\Rv)}{\propd(\Rv)} \mathrm d \Rv \approx \frac{1}{\nsamp} \sum_{i=1}^{\nsamp} \frac{ \targd(\parsmp_i)}{\propd(\parsmp_i)} = \widehat{\evid}$$
-		for $\parsmp_i \sim \propd$
-		\item when taking  $\iw_i = \frac{\targd(\Rv)}{\widehat{\evid}\propd(\Rv)}$ we again get $$\targInt \approx \sum_{i=1}^{\nsamp}[\targfunc(\parsmp_i)\iw_i] =  \widehat{\targInt}_\propd$$
+		$$\int \tilde \targd(\Rv) \mathrm d \Rv = \int \evid \, \targd(\Rv) \mathrm d \Rv = \int \evid \frac{ \targd(\Rv)}{\propd(\Rv)} \mathrm d \Rv \approx \frac{1}{\nsamp} \sum_{i=1}^{\nsamp} \frac{ \targd(\smp_i)}{\propd(\smp_i)} = \widehat{\evid}$$
+		for $\smp_i \sim \propd$
+		\item when taking  $\iw_i = \frac{\targd(\Rv)}{\widehat{\evid}\propd(\Rv)}$ we again get $$\targInt \approx \sum_{i=1}^{\nsamp}[\targfunc(\smp_i)\iw_i] =  \widehat{\targInt}_\propd$$
 		\item consistent by standard results, unbiased asymptotically in $\nsamp$, often has lower variance than standard IS \citep{Robert2004}
 	\end{itemize}
 }
@@ -237,7 +237,7 @@
 	\item quality assessment: how many i.i.d. samples from $\targd$ are our samples from $\propd$ equivalent to
 	\item one common measure is \emph{effective sample size}, estimated as
 	$$ \nsamp_e = \frac{(\sum_{i=1}^{\nsamp} \iw_i)^2}{\sum_{i=1}^{\nsamp} \iw_i^2} $$
-	where weights are normalized to sum to $1$ $$\iw_i = \frac{\targd(\parsmp_i)/\propd(\parsmp_i)}{\sum_{i=1}^{\nsamp} \targd(\parsmp_i)/\propd(\parsmp_i)}$$
+	where weights are normalized to sum to $1$ $$\iw_i = \frac{\targd(\smp_i)/\propd(\smp_i)}{\sum_{i=1}^{\nsamp} \targd(\smp_i)/\propd(\smp_i)}$$
 \end{itemize}	
 }
 
@@ -267,11 +267,11 @@
 		\STATE {\bfseries Output:} lists $P,W$ of $m$ samples and weights
 		
 		
-		\STATE Initialize $\parsmp = List()$
+		\STATE Initialize $\smp = List()$
 		\STATE Initialize $W = List()$
-		\WHILE{$len(\parsmp) \leq \nsamp$}
+		\WHILE{$len(\smp) \leq \nsamp$}
 		\STATE construct proposal distribution $\propd_{t}$
-		\STATE generate  set of $p$ samples $\SaS_t$ from $\propd_{t}$ and append it to $\parsmp$
+		\STATE generate  set of $p$ samples $\SaS_t$ from $\propd_{t}$ and append it to $\smp$
 		\STATE ~~~for all $\smp \in \SaS_t$ append weights $\tilde\targd(\smp)/\propd_{t}(\smp)$ to $W$
 		
 		\ENDWHILE
@@ -293,8 +293,8 @@
 	\frametitle{Random-Walk PMC (1)}
 	\begin{itemize}
 		\item pick some $\propd_0$, for example some Gaussian or Student-$t$ distribution
-		\item given samples $\parsmp_{t-1,i}$ from iteration $t-1$, choose as next proposal the mixture of Gaussians
-		$$\propd_t = \sum_{i=1}^{p}\DNorm(\parsmp_{t-1,i}, M)$$
+		\item given samples $\smp_{t-1,i}$ from iteration $t-1$, choose as next proposal the mixture of Gaussians
+		$$\propd_t = \sum_{i=1}^{p}\DNorm(\smp_{t-1,i}, M)$$
 		for fixed covariance matrix M
 		\item iterate for desired number of iterations
 	\end{itemize}
@@ -343,10 +343,10 @@
 \frametitle{Sampling by constructing a Markov process}
 \begin{itemize}
 	\item we might sample from arbitrary density $\targd$ by constructing Markov process that has $\targd$ as 'invariant' distribution
-	\item i.e. start with some point $\parsmp_0$, generate point $\parsmp_1$ from constructed Markov process
+	\item i.e. start with some point $\smp_0$, generate point $\smp_1$ from constructed Markov process
 	\item if process has invariant distribution $\targd$, then 
-	$$\parsmp_0 \sim \targd \Rightarrow \parsmp_1 \sim \targd$$
-	\item some constructions guarantee $\parsmp_t \sim \targd$ for some $t\in \Nats$, no matter what the distribution of $\parsmp_0$ is
+	$$\smp_0 \sim \targd \Rightarrow \smp_1 \sim \targd$$
+	\item some constructions guarantee $\smp_t \sim \targd$ for some $t\in \Nats$, no matter what the distribution of $\smp_0$ is
 	\item these methods are called \emph{Markov Chain Monte Carlo} (MCMC)
 \end{itemize}
 }
@@ -469,11 +469,11 @@ $$\frac{\acc(\Rv'|\Rv)}{\acc(\Rv|\Rv')} = \frac{\min\left(1, r \right)}{\min\lef
 		\item intuitively, average acceptance probability shouldn't be close to $0$ or to $1$, rather in between
 		\item under strong conditions on target $\targd$, optimal acceptace rates for certain $\propd$ have been derived
 		\begin{itemize}
-			\item $\propd(\cdot|\Rv) = \DNorm(\cdot; \Rv, \sigma^2 M)$: $\acc_{opt} \approx 0.234$ for dimensionality $>5$
-			\item $\propd(\cdot|\Rv) = \DNorm(\cdot; \Rv + \lambda \nabla \log \targd(\Rv), \sigma^2 M)$: $\acc_{opt} \approx 0.56$
+			\item $\propd(\cdot|\Rv) = \DNorm(\cdot; \Rv, \param M)$: $\acc_{opt} \approx 0.234$ for dimensionality $>5$
+			\item $\propd(\cdot|\Rv) = \DNorm(\cdot; \Rv + \lambda \nabla \log \targd(\Rv), \param M)$: $\acc_{opt} \approx 0.56$
 			\item \dots
 		\end{itemize}
-		\item ideal: find parameters $\lambda, M, \sigma^2$ s.t. we attain optimal average acceptance rate
+		\item ideal: find parameters $\lambda, M, \param$ s.t. we attain optimal average acceptance rate
 	\end{itemize}
 }
 
@@ -493,11 +493,11 @@ $$\frac{\acc(\Rv'|\Rv)}{\acc(\Rv|\Rv')} = \frac{\min\left(1, r \right)}{\min\lef
 \frame{
 	\frametitle{Optimal proposal (2)}
 	\begin{itemize}
-		\item assume we have a single scaling parameter as in $\propd(\cdot|\Rv) = \DNorm(\cdot; \Rv, \sigma^2 M)$
-		\item increasing $\sigma^2$ decreases average acceptance rate and vice versa
+		\item assume we have a single scaling parameter as in $\propd(\cdot|\Rv) = \DNorm(\cdot; \Rv, \param M)$
+		\item increasing $\param$ decreases average acceptance rate and vice versa
 		\item naive tuning
 		\begin{itemize}
-			\item run chains at different values for $\sigma^2$
+			\item run chains at different values for $\param$
 			\item compute average acceptance rate
 			\item iterate until good value found
 		\end{itemize}
@@ -508,9 +508,37 @@ $$\frac{\acc(\Rv'|\Rv)}{\acc(\Rv|\Rv')} = \frac{\min\left(1, r \right)}{\min\lef
 
 \frame{
 	\frametitle{Optimal proposal (3)}
-	
+	\begin{itemize}
+		\item On-line algorithm for tuning $\param$: set
+		$$ \parsmp_{i+1} = \parsmp_i + \ssize_i (\hat\alpha_{\parsmp_i} - \alpha_{opt})$$
+		for sequence of step sizes $\lim_{i \to \infty}\ssize_i = 0$ and acceptance rate estimate $\hat\alpha_{\parsmp_i}$
+		\item With an explicit noise term $(\hat\alpha_{\param_i} - \bar\alpha_{\param_i})$ this can be written as
+		\begin{equation*}
+		\label{eq:stoch_appr}
+		\parsmp_{i+1} = \parsmp_i + \ssize_i ( (\bar\alpha_{\parsmp_i} - \alpha_{opt})+ (\hat\alpha_{\parsmp_i} - \bar\alpha_{\parsmp_i}))
+		\end{equation*}
+		where $\bar\alpha_{\parsmp_i}$ is actual acceptance rate for $\param = \parsmp_i$
+		\item under mild conditions sequence of noise terms $(\hat\alpha_{\parsmp_i} - \bar\alpha_{\parsmp_i})_{i=1}^\infty$ averages to zero
+	\end{itemize}
 	
 	}
+
+\frame{
+	\frametitle{Adaptive MH algorithms}
+	\begin{itemize}
+		\item this is an example of an adaptive MH algorithm
+		\item while algorithm class is often called adaptive Markov chain MC, it is not Markovian any more
+		\item proposal density depends on all previous samples through $\parsmp_i$, not just on current state
+		\item guarantee that we sample from $\targd$ asymptotically crucially depends on condition  $\lim_{i \to \infty}\ssize_i = 0$
+		\item as $\ssize_i \rightarrow 0$, we use Markovian MH algorithm with fixed $\param$
+		\item example of \emph{diminishing adaptation conditon} for adaptive MH
+	\end{itemize}
+	
+}
+
+\frame{
+	\frametitle{Adaptive MH algorithms}
+}
 
 \section{Conclusion}
 \frame{
