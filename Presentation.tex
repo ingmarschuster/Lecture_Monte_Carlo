@@ -48,19 +48,51 @@
 \frame{\tableofcontents}
 
 \section{Introduction}
+\subsection{Honesty about uncertain model parameters}
 \frame{
-\frametitle{Point estimation vs. full posterior estimation}
+\frametitle{Point estimation vs. full posterior estimation (1)}
 \begin{itemize}
-	\item Point estimates (e.g. from expectation maximization or other optimization strategies) can result in good statistical performance
+	\item Point estimates of model parameters (e.g. from expectation maximization or other optimization strategies) can result in good statistical performance
 	\item are very cheap for prediction and decision
 	\item can use prior information (called regularization in optimization terms)
 	\item are suboptimal
 	\item using full posterior of a Bayesian model yields optimal performance for given prior (minimum expected error)
-	\item idea is to use class or regression value that is expected under given input as and prior $$\Expect $$ \todo{FINISH THIS}
 	
 \end{itemize}
 }
 
+\frame{
+	\frametitle{Point estimation vs. full posterior estimation (2)}
+	\begin{itemize}
+		\item assume there is a true parameter generating the data
+		\begin{itemize}
+			\item because of noise in data, typically won't find it using optimization
+			\item as number of datapoints increases, posterior concentrates around true value
+		\end{itemize}
+		\item instead of giving a single point, we can estimate the region it lies in
+		\begin{itemize}
+			\item \emph{credible interval} region of posterior around mean which encloses certain percentage of posterior mass
+			\item \emph{high posterior density region} every point in HPD region has posterior density no less than every point outside it, while covering certain percentage of posterior mass
+			\item disconnected HPD region (multimodal posterior) can indicate misspecified model, i.e. prior and posterior don't match
+		\end{itemize}
+	\end{itemize}
+}
+
+\frame{
+\frametitle{Credible interval}
+\begin{center}
+\includegraphics[width=\linewidth]{"fig/CI_multimodal_posterior"}
+\end{center}
+}
+
+\frame{
+	\frametitle{HPD region}
+\begin{center}
+\includegraphics[width=\linewidth]{"fig/HPD_multimodal_posterior"}
+\end{center}
+}
+
+\subsection{Laplace approximation}
 \frame{
 \frametitle{Target approximation using 2nd order Taylor/Laplace (1)}
 \begin{itemize}
@@ -102,8 +134,9 @@
 	
 }
 
-\section{Ordinary Monte Carlo}
 
+\section{Ordinary Monte Carlo and importance sampling}
+\subsection{Ordinary Monte Carlo}
 \frame{
 \frametitle{Ordinary Monte Carlo}
 \begin{itemize}
@@ -147,6 +180,8 @@
 	\item if $\Var[\targfunc(\smp_i)]$ large, so is the variance of our estimator
 \end{itemize}
 }
+
+\subsection{Importance sampling}
 
 \frame{
 \frametitle{Importance sampling trick}
@@ -241,7 +276,7 @@
 \end{itemize}	
 }
 
-\section{Population Monte Carlo}
+\subsection{Population Monte Carlo}
 
 \frame {
 	\frametitle{Adaptive Importance Sampling: Population Monte Carlo}
@@ -281,7 +316,7 @@
 \frame{
 	\frametitle{PMC properties}
 	\begin{itemize}
-		\item proposals $\propd_{t}$ must not degenerate to distributions that are `too thin compared to $\targd $ 
+		\item proposals $\propd_{t}$ must not degenerate to distributions that are `too thin` compared to $\targd $ 
 		\item diminishing adaptation not a requirement, unlike in adaptive MCMC  (which we will see)
 		\item can adapt any which way we like without need to proof ergodicity
 		\item probability of model given the data at any time for model choice and Bayesian testing (this is $\evid$!)
@@ -321,11 +356,10 @@
 		\item not  as well understood as Metropolis-Hastings and MCMC in general
 	\end{itemize}
 }
+\subsection*{}
 \frame{
-	\frametitle{What have we seen?}
+	\frametitle{Conclusion ordinary MC and IS}
 	\begin{itemize}
-		\item Why we need posterior distributions rather than point estimates (Bayes optimality)
-		\item Laplace approximation as computationally cheap posterior approximation
 		\item ordinary Monte Carlo and convergence rate $O(1/\sqrt{\nsamp})$
 		\item importance sampling
 		\begin{itemize}
@@ -442,6 +476,42 @@ $$\frac{\acc(\Rv'|\Rv)}{\acc(\Rv|\Rv')} = \frac{\min\left(1, r \right)}{\min\lef
 
 }
 
+
+\frame{
+	\frametitle{Independent MH and random walk MH}
+	
+	\begin{tabular}{cc}
+		\textbf{Independent MH} & \textbf{random walk MH}\\
+		\includegraphics[width=0.45\linewidth]{fig/MH_indep_comic}&
+		\includegraphics[width=0.45\linewidth]{fig/MH_rw_comic}\\
+		time-independent & centered at current state
+	\end{tabular}
+}
+
+\frame{
+	\frametitle{Random walk MH}
+	\begin{itemize}
+		\item most common choice is random walk (RW) proposal
+		\item often times performs better, as it adapts to target
+		\item joint probability of current state and proposal given by
+		$$ \targd(\Rv) \propd(\Rv'|\Rv) $$
+		\item marginal proposal $\propd_{mrg}(\Rv') = \Expect_\targd [\propd(\Rv'|\Rv)] = \int \targd(\Rv) \propd(\Rv'|\Rv) \mathrm d \Rv$
+		\item when proposal is e.g. Gaussian, $\propd_{mrg}$ is target convoluted with Gaussian kernel
+	\end{itemize}
+}
+
+\frame{
+\frametitle{Marginal proposal for RW-MH}
+	
+\begin{figure}
+\centering
+\includegraphics[width=\linewidth]{fig/MH_marg_comic}
+\caption{Marginal proposal density for Gaussian RW-MH}
+\label{fig:MH_marg_comic}
+\end{figure}
+
+}
+
 \frame{
 	\frametitle{Choice of proposal (1)}
 	\begin{itemize}
@@ -456,10 +526,11 @@ $$\frac{\acc(\Rv'|\Rv)}{\acc(\Rv|\Rv')} = \frac{\min\left(1, r \right)}{\min\lef
 	\end{itemize}
 	
 \begin{center}
-	\includegraphics[width=0.7\linewidth]{fig/MH_rw_comic}\\
-	$\acc(\Rv'|\Rv) = \min\left(1, {\targd(\Rv')\propd(\Rv|\Rv')}/{\targd(\Rv)\propd(\Rv'|\Rv)}\right)$
+	\includegraphics[width=0.7\linewidth]{fig/MH_rw_width_comic}\\
+	\small $\acc(\Rv'|\Rv) = \min\left(1, {\targd(\Rv')\propd(\Rv|\Rv')}/{\targd(\Rv)\propd(\Rv'|\Rv)}\right)$
 \end{center}
 	}
+
 
 \frame{
 	\frametitle{Choice of proposal (2)}
@@ -531,20 +602,130 @@ $$\frac{\acc(\Rv'|\Rv)}{\acc(\Rv|\Rv')} = \frac{\min\left(1, r \right)}{\min\lef
 		\item proposal density depends on all previous samples through $\parsmp_i$, not just on current state
 		\item guarantee that we sample from $\targd$ asymptotically crucially depends on condition  $\lim_{i \to \infty}\ssize_i = 0$
 		\item as $\ssize_i \rightarrow 0$, we use Markovian MH algorithm with fixed $\param$
-		\item example of \emph{diminishing adaptation conditon} for adaptive MH
+		\item example of \emph{diminishing adaptation condition} for adaptive MH
 	\end{itemize}
 	
 }
 
 \frame{
-	\frametitle{Adaptive MH algorithms}
+	\frametitle{Adaptive MCMC algorithms}
+	To asymptotically sample from $\targd$, adaptive MCMC must satisfy  
+	\begin{itemize}
+		\item \emph{Diminishing Adaptation}
+		\begin{equation*}
+		\label{eq:dimin_adapt}
+		\lim_{n \rightarrow \infty} \sup_{\Rv \in \StateSp} \|\MK_{n+1}(\Rv, \cdot) - \MK_{n}(\Rv, \cdot)\| = 0 \textrm{ in probability}
+		\end{equation*}
+		\item \emph{Bounded Convergence} (or \emph{Containment})
+		\begin{equation*}
+		\label{eq:bound_conv}
+		\{M_\epsilon(\smp_n, n)\}_{n=0}^\infty \textrm{ is bounded in probability}
+		\end{equation*} 
+		where $M_\epsilon(\Rv, n) = \inf\{\|\MK_n^i(\Rv, \cdot) - \targd(\cdot) \| \leq \epsilon : i \geq 1 \}$ for some $\epsilon > 0$ is called the $\epsilon$ convergence time for kernel $\MK_n$ when starting from state $\Rv$. 
+	\end{itemize}
 }
 
-\section{Conclusion}
 \frame{
-\frametitle{Conclusion (1)}
+	\frametitle{Diminishing adaptation}
+	\begin{itemize}
+		\item diminishing adaptation is stronger conditions
+		\begin{equation*}
+		\label{eq:dimin_adapt}
+		\lim_{n \rightarrow \infty} \sup_{\Rv \in \StateSp} \|\MK_{n+1}(\Rv, \cdot) - \MK_{n}(\Rv, \cdot)\| = 0 \textrm{ in probability}
+		\end{equation*}
+		\item amount of adaptation goes to $0$ for a growing number of samples $n$
+		\item infinite overall adaptation still possible $\sum_{n=1}^\infty \sup_{x \in \StateSp} \|\MK_{n+1}(x, \cdot) - \MK_{n}(x, \cdot)\|< \infty$
+		\item limit $ \lim_{n \rightarrow \infty} \MK_n$ does not need to exist (no convergence to some fixed kernel necessary)
+		\item one way of diminishing adaptation: adapt with probability $p(n)$ and have $\lim_{n \rightarrow \infty} p(n) = 0$. 
+	\end{itemize}
+}
+
+\frame{
+\frametitle{Bounded convergence}
 \begin{itemize}
-	\item 
+	\item {Bounded Convergence} is less strong
+	\begin{equation*}
+	\label{eq:bound_conv}
+	\{M_\epsilon(\smp_n, n)\}_{n=0}^\infty \textrm{ is bounded in probability}
+	\end{equation*}
+	with  $M_\epsilon(\Rv, n) = \inf\{\|\MK_n^i(\Rv, \cdot) - \targd(\cdot) \| \leq \epsilon : i \geq 1 \}$ for some $\epsilon > 0$
+	\item intuition: no matter what Markov kernel  $\MK_n$ and current state $\smp_n$,
+	iterating $\MK_n$ will converge in a finite number of iterations
+	\item while typically easy to satisfy, counterexamples exist
+\end{itemize}
+}
+
+\frame{
+\frametitle{Adaptive Metropolis (1)}
+\begin{itemize}
+	\item one of the first adaptive algorithms is \emph{adaptive Metropolis}
+	\item basic idea is to adapt to covariance structure of target
+	\item using samples resulting from accept/reject step	
+	\item under assumption that target variances are finite (i.e. covariance matrix exists)
+	\item amounts to finding directions and amount of main variation
+\end{itemize}
+}
+
+\frame{
+	\frametitle{Adaptive Metropolis (2)}
+
+	\begin{itemize}
+		\item concretely, we use covariance
+			\begin{equation*}
+			\label{eq:haario_cov}
+			C_n = \begin{cases}
+			C_0 & n \leq n_0 \\
+			\param (\Cov(X_0,\dots, X_{n-1}) + \epsilon I)& n > n_0
+			\end{cases}
+			\end{equation*}
+			at iteration $n$, where $\param$ and $\epsilon$ are tunable parameters
+		\item  update $C_n$ recursively, or directly a Cholesky decomposition to avoid $O(\targdim)$ cost at each iteration
+		\item proposal distribution for a new point
+		\begin{equation*}
+		q_\mathrm{AM}(\cdot|\smp_n) = \DNorm(\cdot; \smp_n, C_n)
+		\end{equation*}
+		\item standard acceptance probability
+	\end{itemize}
+}
+
+\frame{
+	\frametitle{Adaptive Metropolis (3)}
+	\begin{itemize}
+		\item computationally relatively cheap
+		\item diminishing adaptation at $O(1/n)$ rate (covariance estimate is a MC average)
+		\item bounded convergence if density $\targd$ decays at least polynomially
+		\begin{itemize}
+			\item ensures entries in $C_n$ converge to finite value
+		\end{itemize}
+		\item can be combined with on-line tuning of $\param$ to achieve optimal RW acceptance rate of $0.234$
+		\item strong performance for many problems
+	\end{itemize}
+}
+
+\subsection*{Conclusion MCMC}
+\frame{
+\frametitle{Conclusion MCMC (1)}
+\begin{itemize}
+	\item have looked at general idea of constructing a Markov chain to sample from a desired target
+	\item introduced most important class of MCMC, Metropolis-Hastings
+	\begin{itemize}
+		\item construction using proposal density and acceptance probability
+		\item construction of acceptance probability to satisfy detailed balance
+		\item time-independent proposals vs. time-dependent proposals (e.g. random walk proposals)
+	\end{itemize}
+\end{itemize}
+}
+
+\frame{
+\frametitle{Conclusion MCMC (2)}
+ \begin{itemize}
+	\item other MCMC algorithms exist to achieve same goal (Gibbs sampling, unadjusted Langevin algorithm)
+	\item adaptive MH algorithms and conditions for convergence
+	\begin{itemize}
+		\item diminishing adaptation and bounded convergence 
+		\item on-line tuning of scaling parameter
+		\item Adaptive Metropolis
+	\end{itemize}
 \end{itemize}
 }
 
